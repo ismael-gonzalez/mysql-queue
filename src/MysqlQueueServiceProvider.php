@@ -8,7 +8,7 @@ use Mysql\Queue\Connectors\MysqlQueueConnector;
  *
  * @author Ismael
  */
-class MysqlQueueServiceProvider extends ServideProvider{
+class MysqlQueueServiceProvider extends ServiceProvider{
 
   /**
    * Indicates if loading of the provider is deferred.
