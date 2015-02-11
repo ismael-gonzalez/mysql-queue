@@ -38,7 +38,7 @@ class MysqlQueue extends Queue implements QueueInterface{
   public function __construct($table = "jobs", $default = 'default')
   {
     $this->default = $default;
-    $this->table = $table
+    $this->table = $table;
   }
 
   /**
@@ -51,11 +51,8 @@ class MysqlQueue extends Queue implements QueueInterface{
    */
   public function push($job, $data = '', $queue = null)
   {
-    return $this->createJob(
-      $job,
-      $this->createPayload($job, $data),
-      $queue
-    );
+    $options = array('name' => $job);
+    return $this->pushRaw($this->createPayload($job, $data), $queue, $options);
   }
 
   /**
@@ -69,12 +66,8 @@ class MysqlQueue extends Queue implements QueueInterface{
    */
   public function later($delay, $job, $data = '', $queue = null)
   {
-    return $this->createJob(
-      $job,
-      $this->createPayload($job, $data),
-      $queue,
-      $this->getSeconds($delay)
-    );
+    $options = array("delay" => $this->getSeconds($delay), 'name' => $job);
+    return $this->pushRaw($this->createPayload($job, $data), $queue, $options);
   }
 
   /**
@@ -88,13 +81,8 @@ class MysqlQueue extends Queue implements QueueInterface{
    */
   public function release($queue, $job, $delay)
   {
-    $this->createJob(
-      $this->getJobName($job->payload),
-      $job->payload,
-      $queue,
-      $delay,
-      $job->attempts
-    );
+    $options = array("attempts" => $job->attempts, "delay" => $this->getSeconds($delay));
+    $this->pushRaw($job->payload, $queue, $options);
   }
 
   public function pop($queue = null)
@@ -131,6 +119,25 @@ class MysqlQueue extends Queue implements QueueInterface{
   }
 
   /**
+   * Push a raw payload onto the queue.
+   *
+   * @param  string  $payload
+   * @param  string  $queue
+   * @param  array   $options
+   * @return mixed
+   */
+  public function pushRaw($payload, $queue = null, array $options = array())
+  {
+    return $this->createJob(
+      array_get($options, 'name', $this->getJobName($payload)),
+      $payload,
+      $queue,
+      $this->getSeconds(array_get($options, 'delay', 0)),
+      array_get($options, 'attempts', 0)
+    );
+  } 
+
+  /**
    * Create a new job in the database
    * @param  string  $jobName  name of the job for easier manual look ups
    * @param  mixed  $payload  payload for the job
@@ -142,7 +149,7 @@ class MysqlQueue extends Queue implements QueueInterface{
   protected function createJob($jobName, $payload, $queue, $delay = 0, $attempts = 0){
 
     return DB::table($this->table)->insertGetId([
-      'name' => $jobName
+      'name' => $jobName,
       'queue' => $this->getQueue($queue),
       'payload' => $payload,
       'status' => MysqlQueueJob::STATUS_PENDING,

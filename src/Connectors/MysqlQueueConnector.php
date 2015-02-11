@@ -3,7 +3,7 @@
 use Illuminate\Queue\Connectors\ConnectorInterface;
 use Mysql\Queue\MysqlQueue;
 
-class MysqlQueueConnector implements ConnectorInteface{
+class MysqlQueueConnector implements ConnectorInterface{
 
   /**
    * Establish a queue connection.

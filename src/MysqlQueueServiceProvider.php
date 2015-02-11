@@ -15,12 +15,13 @@ class MysqlQueueServiceProvider extends ServiceProvider{
    *
    * @var bool
    */
-  protected $defer = true;
+  protected $defer = false;
 
   /**
      * Add the connector to the queue drivers
      */
   public function boot(){
+    $this->package('ismael-gonzalez/mysql-queue');
     $manager = $this->app['queue'];
     $manager->addConnector('mysql', function()
     {
