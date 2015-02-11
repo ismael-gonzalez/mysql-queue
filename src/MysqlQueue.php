@@ -155,8 +155,8 @@ class MysqlQueue extends Queue implements QueueInterface{
       'status' => MysqlQueueJob::STATUS_PENDING,
       'attempts' => $attempts,
       'run_at' => $this->getFireDatetime($delay),
-      'created_at' => $this->getTime(),
-      'updated_at' => $this->getTime()
+      'created_at' => date('Y-m-d H:i:s'),
+      'updated_at' => date('Y-m-d H:i:s')
     ]);
   }
 
