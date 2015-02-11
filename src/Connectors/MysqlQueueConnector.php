@@ -14,7 +14,6 @@ class MysqlQueueConnector implements ConnectorInteface{
   public function connect(array $config)
   {
     return new MysqlQueue(
-      $this->connections->connection(array_get($config, 'connection')),
       array_get($config, 'table', 'jobs'),
       array_get($config, 'queue', 'default')
     );

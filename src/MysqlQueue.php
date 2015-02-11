@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Expression;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Queue\Queue;
 use Illuminate\Queue\QueueInterface;
 use Mysql\Queue\Jobs\MysqlQueueJob;
@@ -12,13 +13,6 @@ use Mysql\Queue\Jobs\MysqlQueueJob;
  * @author Ismael
  */
 class MysqlQueue extends Queue implements QueueInterface{
-
-  /**
-   * The database connection.
-   *
-   * @var 
-   */
-  protected $database;
 
   /**
    * The name of the default queue.
@@ -41,10 +35,9 @@ class MysqlQueue extends Queue implements QueueInterface{
    * @param  string  $default
    * @return void
    */
-  public function __construct(Connection $database, $table = "jobs", $default = 'default')
+  public function __construct($table = "jobs", $default = 'default')
   {
     $this->default = $default;
-    $this->database = $database;
     $this->table = $table
   }
 
@@ -108,7 +101,7 @@ class MysqlQueue extends Queue implements QueueInterface{
   {
     $queue = $this->getQueue($queue);
 
-    $job = $this->database->table($this->table)
+    $job = DB::table($this->table)
             ->lockForUpdate()
             ->where('queue', $this->getQueue($queue))
             ->where('status', MysqlQueueJob::STATUS_PENDING)
@@ -117,7 +110,7 @@ class MysqlQueue extends Queue implements QueueInterface{
             ->first();
 
     if(!is_null($job)){
-      $this->database->table($this->table)->where('id', $job['id'])->update([
+      DB::table($this->table)->where('id', $job['id'])->update([
         'status' => MysqlQueueJob::STATE_STARTED, 'time_started' => $this->getTime(),
       ]);
 
@@ -134,7 +127,7 @@ class MysqlQueue extends Queue implements QueueInterface{
    */
   public function deleteStarted($queue, $id)
   {
-    $this->database->table($this->table)->where('id', $id)->delete();
+    DB::table($this->table)->where('id', $id)->delete();
   }
 
   /**
@@ -148,7 +141,7 @@ class MysqlQueue extends Queue implements QueueInterface{
    */
   protected function createJob($jobName, $payload, $queue, $delay = 0, $attempts = 0){
 
-    return $this->database->table($this->table)->insertGetId([
+    return DB::table($this->table)->insertGetId([
       'name' => $jobName
       'queue' => $this->getQueue($queue),
       'payload' => $payload,
