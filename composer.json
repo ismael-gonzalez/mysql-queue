@@ -1,0 +1,28 @@
+{
+    "name": "ismael-gonzalez/mysql-queue",
+    "description": "A laravel 4.2 queue driver using MySQL database. ",
+    "license": "MIT",
+    "homepage": "https://github.com/ismael-gonzalez/mysql-queue",
+    "keywords": [
+        "laravel",
+        "queue",
+        "mysql"
+    ],
+    "authors": [
+        {
+            "name": "Ismael Gonzalez",
+            "email": "igonzalez52689@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.5",
+        "illuminate/support": "4.2.*",
+        "illuminate/console": "4.2.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mysql\\Queue\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
