@@ -1,6 +1,6 @@
 <?php namespace Mysql\Queue;
 
-use Illuminate\Support\ServideProvider;
+use Illuminate\Support\ServiceProvider;
 use Mysql\Queue\Connectors\MysqlQueueConnector;
 
 /**
