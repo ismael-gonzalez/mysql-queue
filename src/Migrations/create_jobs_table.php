@@ -16,6 +16,7 @@ class CreateJobsTable extends Migration {
       $table->string('queue', 255)->nullable()->default(null);
       $table->enum('status', ["PENDING", "STARTED"])->default("PENDING");
       $table->integer('attempts')->default(0);
+      $table->dateTime('time_started')->nullable()->default(null);
       $table->dateTime('run_at');
       $table->longText('payload')->nullable();
       $table->timestamps();
