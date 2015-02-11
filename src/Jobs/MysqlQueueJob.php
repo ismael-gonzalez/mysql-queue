@@ -7,8 +7,6 @@ class MysqlQueueJob extends Job{
 
   const STATUS_PENDING = "PENDING";
   const STATUS_STARTED = "STARTED";
-  const STATUS_FINISHED = "FINISHED";
-  const STATUS_DELETED = "DELETED";
 
   /**
    * The database queue instance.
@@ -121,7 +119,7 @@ class MysqlQueueJob extends Job{
   {
     return $this->container;
   }
-  
+
   /**
    * Get the underlying queue driver instance.
    *
