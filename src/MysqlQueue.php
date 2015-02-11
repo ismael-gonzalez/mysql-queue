@@ -81,8 +81,8 @@ class MysqlQueue extends Queue implements QueueInterface{
    */
   public function release($queue, $job, $delay)
   {
-    $options = array("attempts" => $job->attempts, "delay" => $this->getSeconds($delay));
-    $this->pushRaw($job->payload, $queue, $options);
+    $options = array("attempts" => $job['attempts'], "delay" => $this->getSeconds($delay));
+    $this->pushRaw($job['payload'], $queue, $options);
   }
 
   public function pop($queue = null)

@@ -2,6 +2,7 @@
 
 use Illuminate\Container\Container;
 use Illuminate\Queue\Jobs\Job;
+use Mysql\Queue\MysqlQueue;
 
 class MysqlQueueJob extends Job{
 
@@ -38,13 +39,13 @@ class MysqlQueueJob extends Job{
    * @param  string  $queue
    * @return void
    */
-  public function __construct(Container $container, DatabaseQueue $database, $job, $queue)
+  public function __construct(Container $container, MysqlQueue $database, $job, $queue)
   {
     $this->job = $job;
     $this->queue = $queue;
     $this->database = $database;
     $this->container = $container;
-    $this->job->attempts = $this->job->attempts + 1;
+    $this->job['attempts'] = $this->job['attempts'] + 1;
   }
 
   /**
@@ -54,7 +55,7 @@ class MysqlQueueJob extends Job{
    */
   public function fire()
   {
-    $this->resolveAndFire(json_decode($this->job->payload, true));
+    $this->resolveAndFire(json_decode($this->job['payload'], true));
   }
 
   /**
@@ -65,7 +66,7 @@ class MysqlQueueJob extends Job{
   public function delete()
   {
     parent::delete();
-    $this->database->deleteStarted($this->queue, $this->job->id);
+    $this->database->deleteStarted($this->queue, $this->job['id']);
   }
 
   /**
@@ -87,7 +88,7 @@ class MysqlQueueJob extends Job{
    */
   public function attempts()
   {
-    return (int) $this->job->attempts;
+    return (int) $this->job['attempts'];
   }
 
   /**
@@ -97,7 +98,7 @@ class MysqlQueueJob extends Job{
    */
   public function getJobId()
   {
-    return $this->job->id;
+    return $this->job['id'];
   }
 
   /**
@@ -107,7 +108,7 @@ class MysqlQueueJob extends Job{
    */
   public function getRawBody()
   {
-    return $this->job->payload;
+    return $this->job['payload'];
   }
 
   /**
