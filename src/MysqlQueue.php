@@ -98,6 +98,7 @@ class MysqlQueue extends Queue implements QueueInterface{
             ->first();
 
     if(!is_null($job)){
+      $job = (array) $job;
       DB::table($this->table)->where('id', $job['id'])->update([
         'status' => MysqlQueueJob::STATUS_STARTED, 'time_started' => date('Y-m-d H:i:s'),
       ]);
