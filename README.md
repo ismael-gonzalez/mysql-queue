@@ -1,5 +1,5 @@
 # mysql-queue
-Laravel 4.2 Mysql Queue 
+Laravel 4.2 Mysql Queue handler package, since [the original package[(https://github.com/ismael-gonzalez/mysql-queue) seem to be abandoned.
 
 # Installation
 
