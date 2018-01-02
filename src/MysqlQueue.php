@@ -87,21 +87,32 @@ class MysqlQueue extends Queue implements QueueInterface{
 
   public function pop($queue = null)
   {
+
     $queue = $this->getQueue($queue);
 
-    $job = DB::table($this->table)
-            ->lockForUpdate()
-            ->where('queue', $this->getQueue($queue))
-            ->where('status', MysqlQueueJob::STATUS_PENDING)
-            ->where('run_at', '<=', date("Y-m-d H:i:s"))
-            ->orderBy('id', 'asc')
-            ->first();
+    try {
+      DB::beginTransaction();
+      $job = DB::table($this->table)
+        ->lockForUpdate()
+        ->where('queue', $this->getQueue($queue))
+        ->where('status', MysqlQueueJob::STATUS_PENDING)
+        ->where('run_at', '<=', date("Y-m-d H:i:s"))
+        ->orderBy('id', 'asc')
+        ->first();
 
+      if (!is_null($job)) {
+        DB::table($this->table)->where('id', $job['id'])->update([
+          'status' => MysqlQueueJob::STATUS_STARTED,
+          'time_started' => date('Y-m-d H:i:s'),
+        ]);
+      }
+      DB::commit();
+
+    } catch (\Exception $e) {
+      DB::rollback();
+      throw $e;
+    }
     if(!is_null($job)){
-      DB::table($this->table)->where('id', $job['id'])->update([
-        'status' => MysqlQueueJob::STATUS_STARTED, 'time_started' => date('Y-m-d H:i:s'),
-      ]);
-
       return new MysqlQueueJob($this->container, $this, $job, $queue);
     }
   }
